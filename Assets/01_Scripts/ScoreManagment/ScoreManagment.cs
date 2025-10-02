@@ -9,19 +9,19 @@ public class ScoreManagment : MonoBehaviour
     [Header("Puntajes")]
     public int p1Score = 0;
     public int p2Score = 0;
-    public int winScore = 5; // cambia a 10 si lo prefieres
+    public int winScore = 5; 
 
     [Header("UI")]
-    public Text p1ScoreText;   // Texto del panel del score P1
-    public Text p2ScoreText;   // Texto del panel del score P2
-    public GameObject gameOverPanel; // Panel de Game Over (desactivado al inicio)
-    public Text gameOverText;  // Texto dentro del panel para mostrar "Gana P1/P2"
+    public Text p1ScoreText;  
+    public Text p2ScoreText;  
+    public GameObject gameOverPanel;
+    public Text gameOverText; 
 
     [Header("Bola")]
-    public Rigidbody2D ballRb;       // arrastra aquí el Rigidbody2D de la bola
-    public Transform ballTransform;  // arrastra aquí el Transform de la bola
+    public Rigidbody2D ballRb;       
+    public Transform ballTransform;  
     public float ballStartSpeed = 8f;
-    public float delayRelanzar = 1.0f; // tiempo antes de relanzar tras un punto
+    public float delayRelanzar = 1.0f;
 
     void Awake()
     {
@@ -46,13 +46,11 @@ public class ScoreManagment : MonoBehaviour
 
         if (CheckWin()) return;
 
-        // Reiniciar y relanzar la bola hacia quien recibió el gol (al que le METIERON el punto).
-        // Si P1 anotó (playerIndex=1), relanzamos hacia P2 (derecha). Si P2 anotó, relanzamos hacia P1 (izquierda).
+
         int dir = (playerIndex == 1) ? +1 : -1;
         CancelInvoke(nameof(RelanzarBola));
         ResetBall();
         Invoke(nameof(RelanzarBola), delayRelanzar);
-        // guardamos la dirección para el próximo relanzamiento
         _nextLaunchDir = dir;
     }
 
@@ -108,13 +106,11 @@ public class ScoreManagment : MonoBehaviour
     void RelanzarBola()
     {
         if (!ballRb) return;
-        // Lanza con una pequeña variación vertical para que no sea 100% recto
         float y = Random.Range(-0.4f, 0.4f);
         Vector2 dir = new Vector2(Mathf.Sign(_nextLaunchDir), y).normalized;
         ballRb.velocity = dir * ballStartSpeed;
     }
 
-    // Botón opcional para reiniciar toda la partida
     public void RestartMatch()
     {
         p1Score = 0;
@@ -126,7 +122,6 @@ public class ScoreManagment : MonoBehaviour
         Invoke(nameof(RelanzarBola), 0.6f);
     }
 
-    // Botón opcional para volver al menú (si tienes una escena de menú)
     public void LoadMenu(string menuSceneName)
     {
         SceneManager.LoadScene(menuSceneName);

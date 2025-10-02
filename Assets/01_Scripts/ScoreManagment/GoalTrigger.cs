@@ -11,7 +11,6 @@ public class GoalTrigger : MonoBehaviour
 
     private void Reset()
     {
-        // Asegura que el collider sea trigger
         var col = GetComponent<Collider2D>();
         if (col) col.isTrigger = true;
     }
