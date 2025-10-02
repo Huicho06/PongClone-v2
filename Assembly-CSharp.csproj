@@ -57,7 +57,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\01_Scripts\ScoreManagment\GoalTrigger.cs" />
+    <Compile Include="Assets\01_Scripts\GameOverPanelManager.cs" />
+    <Compile Include="Assets\01_Scripts\Player\PlayerPaddle2D.cs" />
     <Compile Include="Assets\01_Scripts\ScoreManagment\ScoreManagment.cs" />
+    <Compile Include="Assets\01_Scripts\SceneTransition.cs" />
+    <Compile Include="Assets\01_Scripts\BallController2D.cs" />
+    <Compile Include="Assets\01_Scripts\MainMenu.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
