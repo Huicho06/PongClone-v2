@@ -22,7 +22,7 @@ public class ScoreManagment : MonoBehaviour
     public Transform ballTransform;  
     public float ballStartSpeed = 8f;
     public float delayRelanzar = 1.0f;
-
+    [SerializeField] private string mainMenuSceneName = "MainMenu";
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -88,7 +88,20 @@ public class ScoreManagment : MonoBehaviour
             ballRb.angularVelocity = 0f;
         }
     }
+    public void RestartGame()
+    {
+        var current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.name);
+    }
 
+    // Ir al menú principal (otra escena)
+    public void GoToMenu()
+    {
+        if (!string.IsNullOrEmpty(mainMenuSceneName))
+            SceneManager.LoadScene(mainMenuSceneName);
+        else
+            Debug.LogError("[GameOverPanelManager] Asigna el nombre de la escena de menú en 'mainMenuSceneName'.");
+    }
     void ActualizarUI()
     {
         if (p1ScoreText) p1ScoreText.text = p1Score.ToString();
