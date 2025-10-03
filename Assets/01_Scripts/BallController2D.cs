@@ -13,6 +13,19 @@ public class BallController2D : MonoBehaviour
 
     [Tooltip("Al chocar con el paddle, aumenta levemente la velocidad")]
     [SerializeField] private float speedGainOnPaddle = 0.25f;
+    [Header("Audio")]
+    [Tooltip("Arrastra aquí el AudioSource que reproducirá el sonido (o se buscará uno local si está vacío).")]
+    public AudioSource hitBallAudio;
+    [Tooltip("Si no asignas uno, intentará usar un AudioSource en este mismo GameObject.")]
+    public bool useLocalAudioIfNull = true;
+    [Tooltip("Forzar el AudioSource a 2D (spatialBlend = 0).")]
+    public bool force2D = true;
+    [Range(0f, 1f)] public float volume = 1f;
+    [Tooltip("Evita spam de sonido si hay múltiples contactos super seguidos.")]
+    public float hitCooldown = 0.03f;
+    [Tooltip("Muestra logs en consola para depurar si no suena.")]
+    public bool logDebug = true;
+    float lastHitTime = -999f;
 
     private Rigidbody2D rb;
     private Collider2D col;
@@ -25,6 +38,21 @@ public class BallController2D : MonoBehaviour
         // Recomendado para Pong: sin gravedad y colisiones discretas
         rb.gravityScale = 0f;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        if (hitBallAudio == null && useLocalAudioIfNull)
+            hitBallAudio = GetComponent<AudioSource>();
+
+        if (hitBallAudio != null)
+        {
+            // Configs seguras
+            if (force2D) hitBallAudio.spatialBlend = 0f; // 2D
+            hitBallAudio.playOnAwake = false;
+            hitBallAudio.loop = false;
+            hitBallAudio.volume = volume;
+        }
+        else if (logDebug)
+        {
+            Debug.LogWarning("[PlayerPaddle2D] No hay AudioSource asignado ni local. No se podrá reproducir sonido.");
+        }
     }
 
     private void OnEnable()
@@ -92,6 +120,7 @@ public class BallController2D : MonoBehaviour
         }
         else if (tag == "player")
         {
+
             // Rebote tipo Pong: la dirección depende del punto de impacto en el paddle
             Transform paddle = collision.collider.transform;
 
@@ -118,6 +147,29 @@ public class BallController2D : MonoBehaviour
             speed += speedGainOnPaddle;
             rb.velocity = finalDir * speed;
         }
+    }
+    void OnHitBall()
+    {
+        // color aleatorio
+
+        // sonido
+        if (hitBallAudio == null) return;
+        if (Time.time - lastHitTime < hitCooldown) return;
+
+        // Si el AudioSource tiene un clip asignado, Play() es suficiente.
+        // Si prefieres no interrumpir un sonido que esté sonando, usa PlayOneShot(hitBallAudio.clip, volume).
+        if (hitBallAudio.clip != null)
+        {
+            // No interrumpir si ya está sonando: probar OneShot
+            hitBallAudio.PlayOneShot(hitBallAudio.clip, volume);
+        }
+        else
+        {
+            // No hay clip asignado: nada que reproducir
+            if (logDebug) Debug.LogWarning("[PlayerPaddle2D] El AudioSource no tiene clip asignado.");
+        }
+
+        lastHitTime = Time.time;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
